@@ -1,7 +1,7 @@
 
 # Created by https://www.gitignore.io/api/code,python,pycharm+all,visualstudio,jupyternotebooks,visualstudiocode,openframeworks+visualstudio
 # Edit at https://www.gitignore.io/?templates=code,python,pycharm+all,visualstudio,jupyternotebooks,visualstudiocode,openframeworks+visualstudio
-
+data
 ### Code ###
 .vscode/*
 !.vscode/settings.json

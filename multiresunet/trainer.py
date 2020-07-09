@@ -83,6 +83,7 @@ class Trainer:
         self.optimizer = optimizer
         self.objective_metric = objective_metric
         self.device = device
+        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, 'min')
 
         if self.device:
             model.to(self.device)
@@ -226,6 +227,7 @@ class Trainer:
             pred = self.model(X)
             loss = self.loss_fn(pred, y)
             score = self.objective_metric(pred, y)
+            self.scheduler.step(score)
             if self.tensorboard_logger:
                 self.tensorboard_logger.add_scalar('exp-%s/batch/test/loss' % self.experiment_prefix, loss, index)
                 self.tensorboard_logger.add_scalar('exp-%s/batch/test/score' % self.experiment_prefix, score, index)
