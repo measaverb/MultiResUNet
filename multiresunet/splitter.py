@@ -5,9 +5,11 @@ import shutil
 
 def splitter(root, ratio):
     file_list = os.listdir(root + 'train' + '/image/')
-    train_item = [file for file in file_list if file.endswith(".PNG")]
-    train_item = random.shuffle(train_item)
-    gaesu = len(train_item) * (int(ratio) / 100)
+    # print(file_list)
+    # train_item = [file for file in file_list if file.endswith(".PNG")]
+    # print(train_item)
+    train_item = random.shuffle(file_list)
+    gaesu = len(file_list) // int(ratio)
     for i in range(0, gaesu):
-        shutil.move(root + 'train' + '/image/' + train_item[gaesu], root + 'val' + '/image/' + train_item[gaesu])
-        shutil.move(root + 'train' + '/mask/' + train_item[gaesu], root + 'val' + '/mask/' + train_item[gaesu])
+        shutil.move(root + 'train' + '/image/' + file_list[i], root + 'val' + '/image/' + file_list[i])
+        shutil.move(root + 'train' + '/mask/' + file_list[i], root + 'val' + '/mask/' + file_list[i])

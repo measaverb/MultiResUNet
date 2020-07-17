@@ -3,7 +3,7 @@ import argparse
 from multiresunet.splitter import splitter
 from multiresunet.dataset import ThyroidNoduleDataset
 from multiresunet.transform import preprocessing
-from multiresunet.model import MultiResUNet
+from multiresunet.model.MultiResUNet import MultiResUNet
 from multiresunet.trainer import Trainer
 from multiresunet.metric import dice_coeff
 
@@ -40,16 +40,16 @@ print(cfg)
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(device)
 
-if __name__ == "__main__":
-    splitter(cfg.dataset, cfg.val_ratio)
+# splitter(cfg.dataset, cfg.val_ratio)
 
+if __name__ == "__main__":
     ds_train = ThyroidNoduleDataset(root='./data/', split='train', transform=preprocessing)
     ds_test = ThyroidNoduleDataset(root='./data/', split='val', transform=preprocessing)
     dl_train = DataLoader(ds_train, batch_size=cfg.batch_size, shuffle=True, num_workers=cfg.workers)
     dl_test = DataLoader(ds_test, batch_size=cfg.batch_size, shuffle=False, num_workers=cfg.workers)
     print("DATA LOADED")
 
-    model = MultiResUNet(3, 1)
+    model = MultiResUNet(3, 1).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.lr)
     criterion = torch.nn.BCEWithLogitsLoss()
     success_metric = dice_coeff

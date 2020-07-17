@@ -20,19 +20,19 @@ class ThyroidNoduleDataset(Dataset):
         self.split = split
         self.transform = transform
         
-        file_list = os.listdir(root + self.split + '/image/')
-        self.items = [file for file in file_list if file.endswith(".PNG")]
+        file_list = os.listdir(self.root + self.split + '/image/')
+        self.items = file_list
 
     def __getitem__(self, index):
         if self.split == 'train':
-            src = cv2.imread(root + 'train/image/' + str(self.items[index]))
-            mask = cv2.imread(root + 'train/mask/' + str(self.items[index]))
+            src = cv2.imread(self.root + 'train/image/' + str(self.items[index]))
+            mask = cv2.imread(self.root + 'train/mask/' + str(self.items[index]))
         elif self.split == 'val':
-            src = cv2.imread(root + 'val/image/' + str(self.items[index]))
-            mask = cv2.imread(root + 'val/mask/' + str(self.items[index]))
+            src = cv2.imread(self.root + 'val/image/' + str(self.items[index]))
+            mask = cv2.imread(self.root + 'val/mask/' + str(self.items[index]))
         elif self.split == 'test':
-            src = cv2.imread(root + 'test/image/' + str(self.items[index]))
-            mask = cv2.imread(root + 'test/mask/' + str(self.items[index]))
+            src = cv2.imread(self.root + 'test/image/' + str(self.items[index]))
+            mask = cv2.imread(self.root + 'test/mask/' + str(self.items[index]))
         
         sample = (src, mask)
 

@@ -6,9 +6,9 @@ def resize(im, size):
     im = cv2.resize(im, dsize=(int(size), int(size)), interpolation=cv2.INTER_AREA)
     return im
 
-def preprocessing(image, mask, res):
+def preprocessing(image, mask):
     image = image / 255.0
-    image, mask = resize(image, res), resize(mask, res)
+    image, mask = resize(image, 400), resize(mask, 400)
     image_transform = transforms.Compose(
         [
             transforms.ToTensor(),

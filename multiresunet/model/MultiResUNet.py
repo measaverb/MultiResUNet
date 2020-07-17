@@ -6,7 +6,7 @@ import torchvision
 
 
 class conv_block(nn.Module):
-    def __init__(self,ch_in,ch_out,kernel=3,stride=1,padding=1,act='relu'):
+    def __init__(self,ch_in,ch_out,kernel_size=3,stride=1,padding=1,act='relu'):
         super(conv_block,self).__init__()
         if act == None:
             self.conv = nn.Sequential(
@@ -55,7 +55,7 @@ class res_block(nn.Module):
     def forward(self,x):
         res_x = self.res(x)
         main_x = self.main(x)
-        out = torch.add((res_x, main_x))
+        out = res_x.add(main_x)
         out = nn.ReLU(inplace=True)(out)
         out = nn.BatchNorm2d(out.size[1])(out)
         return out
@@ -76,11 +76,14 @@ class ResPath(nn.Module):
 class MultiResBlock(nn.Module):
     def __init__(self,U,alpha=1.67):
         super(MultiResBlock,self).__init__()
-        W = alpha * U
-        self.residual_layer = conv_block(3, int(W*0.167)+int(W*0.333)+int(W*0.5), 1, 1, 0, act=None)
-        self.conv3x3 = conv_block(3, int(W*0.167))
-        self.conv5x5 = conv_block(int(W*0.167), int(W*0.333))
-        self.conv7x7 = conv_block(int(W*0.333), int(W*0.5))
+        self.W = alpha * U
+        self.residual_layer = conv_block(3, int(self.W*0.167)+int(self.W*0.333)+int(self.W*0.5), 1, 1, 0, act=None)
+        self.conv3x3 = conv_block(3, int(self.W*0.167))
+        self.conv5x5 = conv_block(int(self.W*0.167), int(self.W*0.333))
+        self.conv7x7 = conv_block(int(self.W*0.333), int(self.W*0.5))
+        self.relu = nn.ReLU(inplace=True)
+        self.batchnorm_1 = nn.BatchNorm2d(int(self.W*0.167)+int(self.W*0.333)+int(self.W*0.5))
+        self.batchnorm_2 = nn.BatchNorm2d(int(self.W*0.167)+int(self.W*0.333)+int(self.W*0.5))
         
     def forward(self, x):
         res = self.residual_layer(x)
@@ -88,10 +91,12 @@ class MultiResBlock(nn.Module):
         obo = self.conv5x5(sbs)
         cbc = self.conv7x7(obo)
         all_t = torch.cat((sbs, obo, cbc), 1)
-        all_t_b = nn.BatchNorm2d(int(W*0.167)+int(W*0.333)+int(W*0.5))(all_t)
-        out = torch.add((all_t_b, res))
-        out = nn.ReLU(inplace=True)(out)
-        out = nn.BatchNorm2d(out.size[1])(out)
+        all_t_b = self.batchnorm_1(all_t)
+        print(all_t_b.size())
+        print(res.size())
+        out = all_t_b.add(res)
+        out = self.relu(out)
+        out = self.batchnorm_2(out)
 
         return out
 
